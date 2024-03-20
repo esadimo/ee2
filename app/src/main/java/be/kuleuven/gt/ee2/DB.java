@@ -13,6 +13,8 @@ public class DB {
     private String carLocation;
     @SerializedName("Time")
     private String time;
+    @SerializedName("date_only")
+    private String date;
 
     public int getId() {
         return id;
@@ -52,6 +54,14 @@ public class DB {
 
     public void setTime(String time) {
         this.time = time;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 }
 

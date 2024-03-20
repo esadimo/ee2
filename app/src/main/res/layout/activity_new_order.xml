@@ -23,13 +23,14 @@
         android:id="@+id/client_number"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
         android:text="Order summary:"
         android:textColor="@color/white"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.133"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent" />
 
     <LinearLayout
@@ -55,12 +56,10 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="5dp"
-                android:text="Order ID:"
+                android:text="Order Id:"
                 android:textColor="@color/black"
                 android:textSize="20sp"
-                android:textStyle="bold">
-
-            </TextView>
+                android:textStyle="bold"/>
 
             <TextView
                 android:id="@+id/customer_id_value"
@@ -72,20 +71,16 @@
                 android:textColor="@color/black"
                 android:textSize="18sp" />
 
-
             <TextView
                 android:id="@+id/table_number_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"
                 android:text="Table Number:"
                 android:textColor="@color/black"
                 android:textSize="20sp"
-                android:textStyle="bold">
-
-            </TextView>
+                android:textStyle="bold"/>
 
             <TextView
                 android:id="@+id/table_number_value"
@@ -93,7 +88,6 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"
                 android:textColor="@color/black"
                 android:textSize="18sp" />
 
@@ -103,13 +97,10 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"
                 android:text="Order Time:"
                 android:textColor="@color/black"
                 android:textSize="20sp"
-                android:textStyle="bold">
-
-            </TextView>
+                android:textStyle="bold"/>
 
             <TextView
                 android:id="@+id/time_value"
@@ -117,13 +108,31 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"
                 android:textColor="@color/black"
                 android:textSize="18sp" />
 
+            <!-- 新增的部分，用于显示 Plate Status -->
+            <TextView
+                android:id="@+id/plate_status_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="5dp"
+                android:text="Plate Status:"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/plate_status_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="5dp"
+                android:textColor="@color/black"
+                android:textSize="18sp" />
         </LinearLayout>
     </LinearLayout>
-
 
     <TextView
         android:id="@+id/delivery_label"
@@ -144,7 +153,7 @@
         android:id="@+id/imageView"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="12dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
@@ -157,7 +166,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="30dp"
-        android:layout_marginTop="476dp"
+        android:layout_marginTop="496dp"
         android:layout_marginEnd="30dp"
         android:progress="50"
         app:layout_constraintEnd_toEndOf="parent"
@@ -199,6 +208,5 @@
             android:textStyle="bold" />
 
     </LinearLayout>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

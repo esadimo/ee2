@@ -11,6 +11,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.util.Log;
 import com.google.gson.Gson;
@@ -54,7 +58,9 @@ public class new_order extends AppCompatActivity {
                             Type type = new TypeToken<List<DB>>(){}.getType();
                             List<DB> dbList = gson.fromJson(responseData, type);
 
-                            runOnUiThread(() -> updateUI(dbList));
+                            runOnUiThread(() -> {
+                                updateUI(dbList);
+                            });
                         }
                     }
                 });
@@ -66,35 +72,60 @@ public class new_order extends AppCompatActivity {
         executorService.submit(runnable); // 使用ExecutorService异步执行任务
     }
 
+    private void updateUI(List<DB> dbList) {
+        Log.d("NewOrderActivity", "updateUI called");
 
-private void updateUI(List<DB> dbList) {
-    Log.d("NewOrderActivity", "updateUI called");
+        if (dbList != null && !dbList.isEmpty()) {
+            DB firstItem = dbList.get(0);
+            int id = firstItem.getId();
+            int tableNumber = firstItem.getTableNumber();
+            String timestamp = firstItem.getTime();
+            Log.d("NewOrderActivity", "Updating UI with ID: " + id + " and Table Number: " + tableNumber + "and Order Time: " + timestamp);
 
-    if (dbList != null && !dbList.isEmpty()) {
-        DB firstItem = dbList.get(0);
-        int id = firstItem.getId();
-        int tableNumber = firstItem.getTableNumber(); // 获取第一个元素的 Table Number
-        String timestamp = firstItem.getTime();
-        Log.d("NewOrderActivity", "Updating UI with ID: " + id + " and Table Number: " + tableNumber + "and Order Time: " + timestamp);
+            TextView customerIdTextView = findViewById(R.id.customer_id_value);
+            customerIdTextView.setText(String.valueOf(id));
 
-        TextView customerIdTextView = findViewById(R.id.customer_id_value);
-        customerIdTextView.setText(String.valueOf(id));
+            TextView tableNumberTextView = findViewById(R.id.table_number_value);
+            tableNumberTextView.setText(String.valueOf(tableNumber));
 
-        TextView tableNumberTextView = findViewById(R.id.table_number_value); // 确保使用正确的 TextView ID
-        tableNumberTextView.setText(String.valueOf(tableNumber));
+            TextView timestampTextView = findViewById(R.id.time_value);
+            timestampTextView.setText(String.valueOf(timestamp));
 
-        TextView timestampTextView = findViewById(R.id.time_value);
-        timestampTextView.setText(String.valueOf(timestamp));
+            TextView plateStatus = findViewById(R.id.plate_status_value);
+            updateUIBasedOnPlateStatus(firstItem.getPlateStatus());
+        }
+
+        Log.d("NewOrderActivity", "updateUI finished");
     }
 
-    Log.d("NewOrderActivity", "updateUI finished");
-}
+    private void updateUIBasedOnPlateStatus(String plateStatus) {
+        TextView deliveryLabel = findViewById(R.id.delivery_label);
+        ProgressBar progressBar = findViewById(R.id.progress_bar);
+        ImageView imageView = findViewById(R.id.imageView);
+        TextView plateStatusValue = findViewById(R.id.plate_status_value);
+        TextView plateStatusLabel = findViewById(R.id.plate_status_label);
 
+        if ("Yes".equals(plateStatus)) {
+            deliveryLabel.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.VISIBLE);
+            imageView.setVisibility(View.VISIBLE);
+            plateStatusLabel.setVisibility(View.GONE);
+            plateStatusValue.setVisibility(View.GONE);
 
+        } else {
+            deliveryLabel.setVisibility(View.GONE);
+            progressBar.setVisibility(View.GONE);
+            imageView.setVisibility(View.GONE);
+            plateStatusLabel.setVisibility(View.VISIBLE);
+            plateStatusValue.setVisibility(View.VISIBLE);
+            plateStatusValue.setText(plateStatus); // 显示实际的plateStatus值
+        }
+    }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        executorService.shutdown(); // 关闭ExecutorService
+        executorService.shutdown();
     }
 }
+
