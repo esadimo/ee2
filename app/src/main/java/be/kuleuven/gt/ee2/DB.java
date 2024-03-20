@@ -1,85 +1,60 @@
 package be.kuleuven.gt.ee2;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
-import java.util.ArrayList;
-
-import org.json.*;
+import com.google.gson.annotations.SerializedName;
 
 public class DB {
+    @SerializedName("Id")
+    private int id;
+    @SerializedName("Table Number")
+    private int tableNumber;
+    @SerializedName("Plate Status")
+    private String plateStatus;
+    @SerializedName("Car Location")
+    private String carLocation;
+    @SerializedName("Time")
+    private String time;
 
-    public String makeGETRequest(String urlName){
-        BufferedReader rd = null;
-        StringBuilder sb = null;
-        String line = null;
-        try {
-            URL url = new URL(urlName);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-            conn.connect();
-            rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            sb = new StringBuilder();
-            while ((line = rd.readLine()) != null)
-            {
-                sb.append(line + '\n');
-            }
-            conn.disconnect();
-            return sb.toString();
-        }
-        catch (MalformedURLException e){
-            e.printStackTrace();
-        }
-        catch (ProtocolException e){
-            e.printStackTrace();
-        }
-        catch (IOException e){
-            e.printStackTrace();
-        }
-        return "";
-
+    public int getId() {
+        return id;
     }
 
-    public void parseJSON(String jsonString){
-        try {
-            JSONArray array = new JSONArray(jsonString);
-            for (int i = 0; i < array.length(); i++)
-            {
-                JSONObject curObject = array.getJSONObject(i);
-                System.out.println("The coach for the " + curObject.getString("Date") + " session is " + curObject.getString("Coach"));
-            }
-        }
-        catch (JSONException e){
-            e.printStackTrace();
-        }
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public String[] getInfo(String jsonString) {
-        String result[]=new String[3] ;
-        try {
-            JSONArray array = new JSONArray(jsonString);
-            for (int i = 0; i < array.length(); i++) {
-                JSONObject curObject = array.getJSONObject(i);
-                result[0] = curObject.getString("Id");
-                result[1] = curObject.getString("Table Number");
-                result[2] = curObject.getString("Time");
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return result;
+    public int getTableNumber() {
+        return tableNumber;
     }
 
-    public static void main(String[] args) {
-        DB rc = new DB();
-        String response = rc.makeGETRequest("https://studev.groept.be/api/a21ib2demo/all" );
-        rc.parseJSON(response);
+    public void setTableNumber(int tableNumber) {
+        this.tableNumber = tableNumber;
+    }
+
+    public String getPlateStatus() {
+        return plateStatus;
+    }
+
+    public void setPlateStatus(String plateStatus1) {
+        this.plateStatus = plateStatus1;
+    }
+
+    public String getCarLocation() {
+        return carLocation;
+    }
+
+    public void setCarLocation(String carLocation) {
+        this.carLocation = carLocation;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
     }
 }
+
 
 
 
