@@ -74,13 +74,17 @@ private void updateUI(List<DB> dbList) {
         DB firstItem = dbList.get(0);
         int id = firstItem.getId();
         int tableNumber = firstItem.getTableNumber(); // 获取第一个元素的 Table Number
-        Log.d("NewOrderActivity", "Updating UI with ID: " + id + " and Table Number: " + tableNumber);
+        String timestamp = firstItem.getTime();
+        Log.d("NewOrderActivity", "Updating UI with ID: " + id + " and Table Number: " + tableNumber + "and Order Time: " + timestamp);
 
         TextView customerIdTextView = findViewById(R.id.customer_id_value);
         customerIdTextView.setText(String.valueOf(id));
 
         TextView tableNumberTextView = findViewById(R.id.table_number_value); // 确保使用正确的 TextView ID
         tableNumberTextView.setText(String.valueOf(tableNumber));
+
+        TextView timestampTextView = findViewById(R.id.time_value);
+        timestampTextView.setText(String.valueOf(timestamp));
     }
 
     Log.d("NewOrderActivity", "updateUI finished");
