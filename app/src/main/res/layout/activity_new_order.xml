@@ -153,12 +153,12 @@
         android:id="@+id/imageView"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/progress_bar"
-        app:srcCompat="@drawable/fast_delivery" />
+        app:layout_constraintTop_toBottomOf="@+id/progress_bar"/>
+<!--        app:srcCompat="@drawable/fast_delivery" />-->
 
     <ProgressBar
         android:id="@+id/progress_bar"

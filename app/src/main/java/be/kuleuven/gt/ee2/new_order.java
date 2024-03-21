@@ -17,6 +17,8 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.util.Log;
+
+import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
@@ -31,6 +33,12 @@ public class new_order extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_order);
         fetchDataPeriodically();
+
+        ImageView imageView = findViewById(R.id.imageView);
+        Glide.with(this)
+                .asGif()
+                .load(R.drawable.food_delivery)
+                .into(imageView);
     }
 
     private void fetchDataPeriodically() {
