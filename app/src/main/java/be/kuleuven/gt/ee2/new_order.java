@@ -48,19 +48,17 @@ public class new_order extends AppCompatActivity {
                 Request request = new Request.Builder()
                         .url("https://studev.groept.be/api/a23ib2c01/New_Get_Latest_Data")
                         .build();
-                Log.d("NewOrderActivity", "Sending network request");
 
                 client.newCall(request).enqueue(new okhttp3.Callback() {
                     @Override
                     public void onFailure(okhttp3.Call call, IOException e) {
-                        Log.e("NewOrderActivity", "Error during network request", e);
+
                     }
 
                     @Override
                     public void onResponse(okhttp3.Call call, Response response) throws IOException {
                         if (response.isSuccessful()) {
                             String responseData = response.body().string();
-                            Log.d("NewOrderActivity", "Response data: " + responseData);
 
                             Gson gson = new Gson();
                             Type type = new TypeToken<List<DB>>(){}.getType();
@@ -73,7 +71,7 @@ public class new_order extends AppCompatActivity {
                     }
                 });
 
-                handler.postDelayed(this, 30000); // 30秒后再次执行
+                handler.postDelayed(this, 1000);
             }
         };
 
@@ -81,14 +79,13 @@ public class new_order extends AppCompatActivity {
     }
 
     private void updateUI(List<DB> dbList) {
-        Log.d("NewOrderActivity", "updateUI called");
 
         if (dbList != null && !dbList.isEmpty()) {
             DB firstItem = dbList.get(0);
             int id = firstItem.getId();
             int tableNumber = firstItem.getTableNumber();
             String timestamp = firstItem.getTime();
-            Log.d("NewOrderActivity", "Updating UI with ID: " + id + " and Table Number: " + tableNumber + "and Order Time: " + timestamp);
+            String platestatus = firstItem.getPlateStatus();
 
             TextView customerIdTextView = findViewById(R.id.customer_id_value);
             customerIdTextView.setText(String.valueOf(id));
@@ -101,9 +98,13 @@ public class new_order extends AppCompatActivity {
 
             TextView plateStatus = findViewById(R.id.plate_status_value);
             updateUIBasedOnPlateStatus(firstItem.getPlateStatus());
+
+
+            int carLocation = firstItem.getCarLocation();
+            updateProgressBar(platestatus,tableNumber, carLocation);
+            updateDistanceText(platestatus,carLocation);
         }
 
-        Log.d("NewOrderActivity", "updateUI finished");
     }
 
     private void updateUIBasedOnPlateStatus(String plateStatus) {
@@ -115,20 +116,101 @@ public class new_order extends AppCompatActivity {
 
         if ("Yes".equals(plateStatus)) {
             deliveryLabel.setVisibility(View.VISIBLE);
+            deliveryLabel.setText("Delivering...");
             progressBar.setVisibility(View.VISIBLE);
             imageView.setVisibility(View.VISIBLE);
-            plateStatusLabel.setVisibility(View.GONE);
-            plateStatusValue.setVisibility(View.GONE);
+            plateStatusLabel.setVisibility(View.VISIBLE);
+            plateStatusValue.setVisibility(View.VISIBLE);
+            plateStatusValue.setText(plateStatus);
 
-        } else {
+        } else if ("No".equals(plateStatus)) {
+            deliveryLabel.setVisibility(View.VISIBLE);
+            deliveryLabel.setText("Returning...");
+            progressBar.setVisibility(View.VISIBLE);
+            imageView.setVisibility(View.GONE);
+            plateStatusLabel.setVisibility(View.VISIBLE);
+            plateStatusValue.setVisibility(View.VISIBLE);
+            plateStatusValue.setText(plateStatus);
+
+        }else {
             deliveryLabel.setVisibility(View.GONE);
             progressBar.setVisibility(View.GONE);
             imageView.setVisibility(View.GONE);
             plateStatusLabel.setVisibility(View.VISIBLE);
             plateStatusValue.setVisibility(View.VISIBLE);
-            plateStatusValue.setText(plateStatus); // 显示实际的plateStatus值
+            plateStatusValue.setText(plateStatus);
         }
     }
+
+    private void updateProgressBar(String plateStatus,int tableNumber, int carLocation) {
+        ProgressBar progressBar = findViewById(R.id.progress_bar);
+
+        if ("No".equals(plateStatus)) {
+            progressBar.setProgress(100);
+            return;
+        }
+        if ("Yes".equals(plateStatus)) {
+            int progress;
+
+            if (tableNumber == 1 || tableNumber == 3) {
+                switch (carLocation) {
+                    case 40:
+                        progress = 0;
+                        break;
+                    case 30:
+                        progress = 25;
+                        break;
+                    case 20:
+                        progress = 50;
+                        break;
+                    case 10:
+                        progress = 75;
+                        break;
+                    case 0:
+                        progress = 100;
+                        break;
+                    default:
+                        return; // 如果 carLocation 不在指定范围内，则不更新进度
+                }
+            } else if (tableNumber == 2) {
+                switch (carLocation) {
+                    case 20:
+                        progress = 0;
+                        break;
+                    case 10:
+                        progress = 50;
+                        break;
+                    case 0:
+                        progress = 100;
+                        break;
+                    default:
+                        return; // 如果 carLocation 不在指定范围内，则不更新进度
+                }
+            } else {
+                return; // 如果 tableNumber 不是 1、2 或 3，则不更新进度
+            }
+
+            progressBar.setProgress(progress);
+        }
+    }
+
+    private void updateDistanceText(String plateStatus,int carLocation) {
+        if ("Yes".equals(plateStatus)){
+            TextView distanceTextView = findViewById(R.id.distance_left);
+            String distanceText = carLocation + "cm";
+            distanceTextView.setText(distanceText);
+        } else {
+            TextView distanceTextView = findViewById(R.id.distance_left);
+            String distanceText = 0 + "cm";
+            distanceTextView.setText(distanceText);
+        }
+
+    }
+
+
+
+
+
 
     @Override
     protected void onDestroy() {

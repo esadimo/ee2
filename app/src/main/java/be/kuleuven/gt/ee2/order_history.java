@@ -62,7 +62,7 @@ public class order_history extends AppCompatActivity {
                     }
                 });
 
-                handler.postDelayed(this, 30000); // 每30秒执行一次
+                handler.postDelayed(this, 1000);
             }
         };
 

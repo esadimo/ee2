@@ -10,7 +10,7 @@ public class DB {
     @SerializedName("Plate Status")
     private String plateStatus;
     @SerializedName("Car Location")
-    private String carLocation;
+    private int carLocation;
     @SerializedName("Time")
     private String time;
     @SerializedName("date_only")
@@ -40,11 +40,11 @@ public class DB {
         this.plateStatus = plateStatus1;
     }
 
-    public String getCarLocation() {
+    public int getCarLocation() {
         return carLocation;
     }
 
-    public void setCarLocation(String carLocation) {
+    public void setCarLocation(int carLocation) {
         this.carLocation = carLocation;
     }
 
