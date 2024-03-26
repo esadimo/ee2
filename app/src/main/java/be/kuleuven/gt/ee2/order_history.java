@@ -39,19 +39,19 @@ public class order_history extends AppCompatActivity {
                 Request request = new Request.Builder()
                         .url("https://studev.groept.be/api/a23ib2c01/New_History_Order")
                         .build();
-                Log.d("NewOrderActivity", "Sending network request");
+//                Log.d("NewOrderActivity", "Sending network request");
 
                 client.newCall(request).enqueue(new okhttp3.Callback() {
                     @Override
                     public void onFailure(okhttp3.Call call, IOException e) {
-                        Log.e("NewOrderActivity", "Error during network request", e);
+//                        Log.e("NewOrderActivity", "Error during network request", e);
                     }
 
                     @Override
                     public void onResponse(okhttp3.Call call, Response response) throws IOException {
                         if (response.isSuccessful()) {
                             String responseData = response.body().string();
-                            Log.d("NewOrderActivity", "Response data: " + responseData);
+//                            Log.d("NewOrderActivity", "Response data: " + responseData);
 
                             Gson gson = new Gson();
                             Type type = new TypeToken<List<DB>>(){}.getType();
@@ -62,7 +62,7 @@ public class order_history extends AppCompatActivity {
                     }
                 });
 
-                handler.postDelayed(this, 30000); // 每30秒执行一次
+                handler.postDelayed(this, 1000); // 每30秒执行一次 30000
             }
         };
 

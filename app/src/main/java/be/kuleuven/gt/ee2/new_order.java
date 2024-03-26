@@ -11,13 +11,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.util.Log;
-
 import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -69,11 +67,13 @@ public class new_order extends AppCompatActivity {
                             runOnUiThread(() -> {
                                 updateUI(dbList);
                             });
+                        } else {
+                            Log.e("NewOrderActivity", "Response not successful");
                         }
                     }
                 });
 
-                handler.postDelayed(this, 30000); // 30秒后再次执行
+                handler.postDelayed(this, 1000); // 1秒后再次执行
             }
         };
 
@@ -88,7 +88,7 @@ public class new_order extends AppCompatActivity {
             int id = firstItem.getId();
             int tableNumber = firstItem.getTableNumber();
             String timestamp = firstItem.getTime();
-            Log.d("NewOrderActivity", "Updating UI with ID: " + id + " and Table Number: " + tableNumber + "and Order Time: " + timestamp);
+            Log.d("NewOrderActivity", "Updating UI with ID: " + id + ", Table Number: " + tableNumber + ", Order Time: " + timestamp + ", Plate Status: " + firstItem.getPlateStatus());
 
             TextView customerIdTextView = findViewById(R.id.customer_id_value);
             customerIdTextView.setText(String.valueOf(id));
@@ -97,13 +97,12 @@ public class new_order extends AppCompatActivity {
             tableNumberTextView.setText(String.valueOf(tableNumber));
 
             TextView timestampTextView = findViewById(R.id.time_value);
-            timestampTextView.setText(String.valueOf(timestamp));
+            timestampTextView.setText(timestamp);
 
-            TextView plateStatus = findViewById(R.id.plate_status_value);
             updateUIBasedOnPlateStatus(firstItem.getPlateStatus());
+        } else {
+            Log.d("NewOrderActivity", "DB list is empty or null");
         }
-
-        Log.d("NewOrderActivity", "updateUI finished");
     }
 
     private void updateUIBasedOnPlateStatus(String plateStatus) {
@@ -113,17 +112,28 @@ public class new_order extends AppCompatActivity {
         TextView plateStatusValue = findViewById(R.id.plate_status_value);
         TextView plateStatusLabel = findViewById(R.id.plate_status_label);
 
-        if ("Yes".equals(plateStatus)) {
+        if ("No".equals(plateStatus)) {
             deliveryLabel.setVisibility(View.VISIBLE);
+            deliveryLabel.setText("Delivering...");
             progressBar.setVisibility(View.VISIBLE);
             imageView.setVisibility(View.VISIBLE);
             plateStatusLabel.setVisibility(View.GONE);
             plateStatusValue.setVisibility(View.GONE);
-
-        } else {
+        }
+        if("Yes".equals(plateStatus)) {
+            Log.d("NewOrderActivity", "Plate status is No, updating UI for 'No' status");
+            deliveryLabel.setVisibility(View.VISIBLE);
+            deliveryLabel.setText("Returning...");
+            progressBar.setVisibility(View.GONE);
+            imageView.setVisibility(View.GONE);
+            plateStatusLabel.setVisibility(View.GONE);
+            plateStatusValue.setVisibility(View.GONE);
+        }
+        if("".equals(plateStatus)) {
             deliveryLabel.setVisibility(View.GONE);
             progressBar.setVisibility(View.GONE);
             imageView.setVisibility(View.GONE);
+            // 当plateStatus不是"Yes"或"No"时
             plateStatusLabel.setVisibility(View.VISIBLE);
             plateStatusValue.setVisibility(View.VISIBLE);
             plateStatusValue.setText(plateStatus); // 显示实际的plateStatus值
@@ -133,7 +143,10 @@ public class new_order extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        executorService.shutdown();
+        if (executorService != null) {
+            executorService.shutdown();
+        }
     }
 }
+
 
