@@ -20,48 +20,24 @@ public class DB {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public int getTableNumber() {
         return tableNumber;
-    }
-
-    public void setTableNumber(int tableNumber) {
-        this.tableNumber = tableNumber;
     }
 
     public String getPlateStatus() {
         return plateStatus;
     }
 
-    public void setPlateStatus(String plateStatus1) {
-        this.plateStatus = plateStatus1;
-    }
-
     public int getCarLocation() {
         return carLocation;
-    }
-
-    public void setCarLocation(int carLocation) {
-        this.carLocation = carLocation;
     }
 
     public String getTime() {
         return time;
     }
 
-    public void setTime(String time) {
-        this.time = time;
-    }
-
     public String getDate() {
         return date;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
     }
 }
 

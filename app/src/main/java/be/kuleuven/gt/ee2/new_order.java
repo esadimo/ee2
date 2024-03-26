@@ -12,12 +12,12 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.util.Log;
-
 import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -27,18 +27,35 @@ public class new_order extends AppCompatActivity {
     private final OkHttpClient client = new OkHttpClient();
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private final Gson gson = new Gson();
+
+    // UI components as member variables
+    private TextView customerIdTextView, tableNumberTextView, timestampTextView, plateStatusValue, distanceTextView;
+    private ProgressBar progressBar;
+    private ImageView imageView;
+    private LinearLayout distanceLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_order);
-        fetchDataPeriodically();
 
-        ImageView imageView = findViewById(R.id.imageView);
-        Glide.with(this)
-                .asGif()
-                .load(R.drawable.food_delivery)
-                .into(imageView);
+        // Initialize UI components
+        initViewComponents();
+        fetchDataPeriodically();
+    }
+
+    private void initViewComponents() {
+        customerIdTextView = findViewById(R.id.customer_id_value);
+        tableNumberTextView = findViewById(R.id.table_number_value);
+        timestampTextView = findViewById(R.id.time_value);
+        plateStatusValue = findViewById(R.id.plate_status_value);
+        distanceTextView = findViewById(R.id.distance_left);
+        progressBar = findViewById(R.id.progress_bar);
+        imageView = findViewById(R.id.imageView);
+        distanceLayout = findViewById(R.id.distance_layout);
+
+        Glide.with(this).asGif().load(R.drawable.food_delivery).into(imageView);
     }
 
     private void fetchDataPeriodically() {
@@ -59,14 +76,10 @@ public class new_order extends AppCompatActivity {
                     public void onResponse(okhttp3.Call call, Response response) throws IOException {
                         if (response.isSuccessful()) {
                             String responseData = response.body().string();
-
-                            Gson gson = new Gson();
                             Type type = new TypeToken<List<DB>>(){}.getType();
                             List<DB> dbList = gson.fromJson(responseData, type);
 
-                            runOnUiThread(() -> {
-                                updateUI(dbList);
-                            });
+                            runOnUiThread(() -> updateUI(dbList));
                         }
                     }
                 });
@@ -75,147 +88,94 @@ public class new_order extends AppCompatActivity {
             }
         };
 
-        executorService.submit(runnable); // 使用ExecutorService异步执行任务
+        executorService.submit(runnable);
     }
 
     private void updateUI(List<DB> dbList) {
-
         if (dbList != null && !dbList.isEmpty()) {
             DB firstItem = dbList.get(0);
-            int id = firstItem.getId();
-            int tableNumber = firstItem.getTableNumber();
-            String timestamp = firstItem.getTime();
-            String platestatus = firstItem.getPlateStatus();
 
-            TextView customerIdTextView = findViewById(R.id.customer_id_value);
-            customerIdTextView.setText(String.valueOf(id));
+            customerIdTextView.setText(String.valueOf(firstItem.getId()));
+            tableNumberTextView.setText(String.valueOf(firstItem.getTableNumber()));
+            timestampTextView.setText(firstItem.getTime());
+            plateStatusValue.setText(firstItem.getPlateStatus());
 
-            TextView tableNumberTextView = findViewById(R.id.table_number_value);
-            tableNumberTextView.setText(String.valueOf(tableNumber));
-
-            TextView timestampTextView = findViewById(R.id.time_value);
-            timestampTextView.setText(String.valueOf(timestamp));
-
-            TextView plateStatus = findViewById(R.id.plate_status_value);
             updateUIBasedOnPlateStatus(firstItem.getPlateStatus());
-
-
-            int carLocation = firstItem.getCarLocation();
-            updateProgressBar(platestatus,tableNumber, carLocation);
-            updateDistanceText(platestatus,carLocation);
+            updateProgressBarAndDistance(firstItem);
         }
-
     }
 
     private void updateUIBasedOnPlateStatus(String plateStatus) {
         TextView deliveryLabel = findViewById(R.id.delivery_label);
-        ProgressBar progressBar = findViewById(R.id.progress_bar);
-        ImageView imageView = findViewById(R.id.imageView);
-        TextView plateStatusValue = findViewById(R.id.plate_status_value);
-        TextView plateStatusLabel = findViewById(R.id.plate_status_label);
+
+        boolean isStatusYes = "Yes".equals(plateStatus);
+        deliveryLabel.setVisibility(isStatusYes ? View.VISIBLE : View.GONE);
+        progressBar.setVisibility(isStatusYes ? View.VISIBLE : View.GONE);
+        imageView.setVisibility(isStatusYes ? View.VISIBLE : View.GONE);
+        distanceLayout.setVisibility(isStatusYes ? View.VISIBLE : View.GONE);
 
         if ("Yes".equals(plateStatus)) {
-            deliveryLabel.setVisibility(View.VISIBLE);
             deliveryLabel.setText("Delivering...");
-            progressBar.setVisibility(View.VISIBLE);
-            imageView.setVisibility(View.VISIBLE);
-            plateStatusLabel.setVisibility(View.VISIBLE);
-            plateStatusValue.setVisibility(View.VISIBLE);
-            plateStatusValue.setText(plateStatus);
-
         } else if ("No".equals(plateStatus)) {
-            deliveryLabel.setVisibility(View.VISIBLE);
             deliveryLabel.setText("Returning...");
-            progressBar.setVisibility(View.VISIBLE);
-            imageView.setVisibility(View.GONE);
-            plateStatusLabel.setVisibility(View.VISIBLE);
-            plateStatusValue.setVisibility(View.VISIBLE);
-            plateStatusValue.setText(plateStatus);
-
-        }else {
-            deliveryLabel.setVisibility(View.GONE);
-            progressBar.setVisibility(View.GONE);
-            imageView.setVisibility(View.GONE);
-            plateStatusLabel.setVisibility(View.VISIBLE);
-            plateStatusValue.setVisibility(View.VISIBLE);
-            plateStatusValue.setText(plateStatus);
         }
     }
 
-    private void updateProgressBar(String plateStatus,int tableNumber, int carLocation) {
-        ProgressBar progressBar = findViewById(R.id.progress_bar);
+    private void updateProgressBarAndDistance(DB dbItem) {
+        int carLocation = dbItem.getCarLocation();
+        String plateStatus = dbItem.getPlateStatus();
+        int tableNumber = dbItem.getTableNumber();
 
+        updateProgressBar(plateStatus, tableNumber, carLocation);
+        updateDistanceText(plateStatus, carLocation);
+    }
+
+    private void updateProgressBar(String plateStatus, int tableNumber, int carLocation) {
         if ("No".equals(plateStatus)) {
             progressBar.setProgress(100);
             return;
         }
-        if ("Yes".equals(plateStatus)) {
-            int progress;
 
+        int progress = 0;
+        if ("Yes".equals(plateStatus)) {
             if (tableNumber == 1 || tableNumber == 3) {
                 switch (carLocation) {
-                    case 40:
-                        progress = 0;
-                        break;
-                    case 30:
-                        progress = 25;
-                        break;
-                    case 20:
-                        progress = 50;
-                        break;
-                    case 10:
-                        progress = 75;
-                        break;
-                    case 0:
-                        progress = 100;
-                        break;
-                    default:
-                        return; // 如果 carLocation 不在指定范围内，则不更新进度
+                    case 40: progress = 0; break;
+                    case 30: progress = 25; break;
+                    case 20: progress = 50; break;
+                    case 10: progress = 75; break;
+                    case 0: progress = 100; break;
+                    default: return;
                 }
             } else if (tableNumber == 2) {
                 switch (carLocation) {
-                    case 20:
-                        progress = 0;
-                        break;
-                    case 10:
-                        progress = 50;
-                        break;
-                    case 0:
-                        progress = 100;
-                        break;
-                    default:
-                        return; // 如果 carLocation 不在指定范围内，则不更新进度
+                    case 20: progress = 0; break;
+                    case 10: progress = 50; break;
+                    case 0: progress = 100; break;
+                    default: return;
                 }
-            } else {
-                return; // 如果 tableNumber 不是 1、2 或 3，则不更新进度
             }
-
-            progressBar.setProgress(progress);
         }
+
+        progressBar.setProgress(progress);
     }
 
-    private void updateDistanceText(String plateStatus,int carLocation) {
+    private void updateDistanceText(String plateStatus, int carLocation) {
         if ("Yes".equals(plateStatus)){
-            TextView distanceTextView = findViewById(R.id.distance_left);
-            String distanceText = carLocation + "cm";
-            distanceTextView.setText(distanceText);
+            distanceTextView.setText(carLocation + "cm");
         } else {
-            TextView distanceTextView = findViewById(R.id.distance_left);
-            String distanceText = 0 + "cm";
-            distanceTextView.setText(distanceText);
+            distanceTextView.setText("0cm");
         }
-
     }
-
-
-
-
-
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        executorService.shutdown();
+        if (!executorService.isShutdown()) {
+            executorService.shutdown();
+        }
     }
 }
+
+
 
