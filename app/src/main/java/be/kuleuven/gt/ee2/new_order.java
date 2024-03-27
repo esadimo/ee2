@@ -109,8 +109,8 @@ public class new_order extends AppCompatActivity {
         TextView deliveryLabel = findViewById(R.id.delivery_label);
 
         boolean isStatusYes = "Yes".equals(plateStatus);
-        deliveryLabel.setVisibility(isStatusYes ? View.VISIBLE : View.GONE);
-        progressBar.setVisibility(isStatusYes ? View.VISIBLE : View.GONE);
+        deliveryLabel.setVisibility(isStatusYes ? View.VISIBLE : View.VISIBLE);
+        progressBar.setVisibility(isStatusYes ? View.VISIBLE : View.VISIBLE);
         imageView.setVisibility(isStatusYes ? View.VISIBLE : View.GONE);
         distanceLayout.setVisibility(isStatusYes ? View.VISIBLE : View.GONE);
 
@@ -162,7 +162,14 @@ public class new_order extends AppCompatActivity {
 
     private void updateDistanceText(String plateStatus, int carLocation) {
         if ("Yes".equals(plateStatus)){
-            distanceTextView.setText(carLocation + "cm");
+            if(carLocation==0)
+            {
+                distanceTextView.setText("");
+            } else
+            {
+                distanceTextView.setText(carLocation+"cm");
+            }
+
         } else {
             distanceTextView.setText("0cm");
         }
