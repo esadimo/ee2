@@ -59,7 +59,7 @@ public class order_history extends AppCompatActivity {
                     }
                 });
 
-                handler.postDelayed(this, 1000);
+                handler.postDelayed(this, 20000);
             }
         };
 
